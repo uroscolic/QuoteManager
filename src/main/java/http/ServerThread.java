@@ -14,7 +14,6 @@ public class ServerThread implements Runnable{
     private Socket client;
     private Socket helper;
     private BufferedReader in;
-    private BufferedReader helperIn;
     private PrintWriter out;
     private static boolean first = true;
     private static String qod;
@@ -25,7 +24,6 @@ public class ServerThread implements Runnable{
             helper = new Socket("localhost", 8081);
             in = new BufferedReader(new InputStreamReader(client.getInputStream()));
             out = new PrintWriter(new OutputStreamWriter(client.getOutputStream()), true);
-            helperIn = new BufferedReader(new InputStreamReader(helper.getInputStream()));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -95,7 +93,6 @@ public class ServerThread implements Runnable{
         finally {
             try {
                 helper.close();
-                helperIn.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
