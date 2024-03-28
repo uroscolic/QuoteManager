@@ -12,8 +12,10 @@ public class QODController extends Controller{
 
     private boolean firstTime = true;
     private static int index = 0;
-    public QODController(Request request) {
+    private String cookie;
+    public QODController(Request request, String cookie) {
         super(request);
+        this.cookie = cookie;
     }
     @Override
     public Response doGet() {
@@ -26,7 +28,7 @@ public class QODController extends Controller{
         String quote = ServerHelper.quotes.get(index).toString();
 
 
-        return new HtmlResponse(quote);
+        return new HtmlResponse(quote,cookie);
     }
 
     @Override

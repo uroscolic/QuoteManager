@@ -7,13 +7,14 @@ import model.Quote;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Server {
 
     public static final int TCP_PORT = 8080;
-    public static List<Quote> quotes = new ArrayList<>();
+    public static Map<String, List<Quote>> quotes = new HashMap<>();
 
     public static void main(String[] args) {
 

@@ -34,12 +34,13 @@ public class ServerHelperThread implements Runnable{
                 if (message.equals("GET /qod")) {
                     Request request = new Request(HttpMethod.GET, "/qod");
                     RequestHandler requestHandler = new RequestHandler();
-                    Response response = requestHandler.handle(request);
+                    Response response = requestHandler.handle(request, null);
                     String qod = response.getResponseString();
-                    qod = qod.substring(qod.indexOf("\r\n\r\n")+4);
                     Gson gson = new Gson();
                     Quote qodQuote = new Quote(qod.substring(0, qod.indexOf(":")), qod.substring(qod.indexOf("\"")+1, qod.length()-1));
                     String qodJSON = gson.toJson(qodQuote);
+                    System.out.println(qodJSON);
+                    System.out.println(qodQuote);
                     out.println(qodJSON);
                     first = false;
                 } else

@@ -7,7 +7,9 @@ import model.Quote;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.StringTokenizer;
+import java.util.UUID;
 
 public class ServerThread implements Runnable{
 
@@ -36,12 +38,26 @@ public class ServerThread implements Runnable{
 
             String method = stringTokenizer.nextToken();
             String path = stringTokenizer.nextToken();
-
+            String cookie = null;
             System.out.println("\nHTTP ZAHTEV KLIJENTA:\n");
             do {
                 System.out.println(requestLine);
                 requestLine = in.readLine();
+                if (requestLine.startsWith("Cookie:")) {
+                    cookie = requestLine;
+                    cookie = cookie.split(":")[1].trim();
+                    System.out.println("Kolac: " + cookie);
+                    if(!Server.quotes.containsKey(cookie))
+                        Server.quotes.put(cookie, new ArrayList<>());
+                }
+
             } while (!requestLine.trim().equals(""));
+
+            if(cookie == null)
+            {
+                cookie = UUID.randomUUID().toString();
+                Server.quotes.put(cookie, new ArrayList<>());
+            }
 
             if (method.equals(HttpMethod.POST.toString())) {
 
@@ -52,7 +68,7 @@ public class ServerThread implements Runnable{
                 String[] parts = s.split("&");
                 String author = parts[0].split("=")[1].replace("+", " ");
                 String quote = parts[1].split("=")[1].replace("+", " ");
-                Server.quotes.add(new Quote(author, quote));
+                Server.quotes.get(cookie).add(new Quote(author, quote));
 
             }
 
@@ -70,7 +86,7 @@ public class ServerThread implements Runnable{
 
             Request request = new Request(HttpMethod.valueOf(method), path);
 
-            Response response = requestHandler.handle(request);
+            Response response = requestHandler.handle(request, cookie);
 
             System.out.println("\nHTTP odgovor:\n");
             System.out.println(response.getResponseString());
@@ -80,6 +96,8 @@ public class ServerThread implements Runnable{
                 finalResponse = finalResponse.replace("<br><br><label>Quotes:",
                         "<br><label><b><i>Quote " +
                         "of the day: </b></label><br><br>" + qod + "</i><br><br><label><b>Quotes:</b>");
+
+            System.out.println("FINAL "+finalResponse);
             out.println(finalResponse);
             in.close();
             out.close();
@@ -99,4 +117,5 @@ public class ServerThread implements Runnable{
 
         }
     }
+
 }

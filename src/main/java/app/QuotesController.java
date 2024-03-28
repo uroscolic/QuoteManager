@@ -7,10 +7,15 @@ import http.response.RedirectResponse;
 import http.response.Response;
 import model.Quote;
 
+import java.util.List;
+import java.util.Map;
+
 public class QuotesController extends Controller{
 
-    public QuotesController(Request request) {
+    String cookie;
+    public QuotesController(Request request, String cookie) {
             super(request);
+            this.cookie = cookie;
         }
 
     @Override
@@ -22,15 +27,16 @@ public class QuotesController extends Controller{
                 "<button>Save quote</button>" +
                 "</form>" +
                 "<br><br>" +
-                "<label>Quotes:</label><br>");
-        for(Quote quote : Server.quotes){
-            htmlBody.append("<p>").append(quote).append("</p>");
+                "<label>Quotes:</label><br><br>");
+        for(Quote quote : Server.quotes.get(cookie)){
+            htmlBody.append(quote.getAuthor()).append(": ").append(quote.getQuote());
+            htmlBody.append("<br>");
         }
 
         String content = "<html><head><title>Odgovor servera</title></head>\n";
         content += "<body>" + htmlBody + "</body></html>";
 
-        return new HtmlResponse(content);
+        return new HtmlResponse(content, cookie);
     }
 
     @Override
